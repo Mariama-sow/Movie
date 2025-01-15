@@ -1,0 +1,19 @@
+{% extends "theater/Layout.html" %}
+
+{% block content %}
+<div class="container p-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2>Supprimer la critique</h2>
+            
+            <form method="post">
+            {% csrf_token %}
+            <p>Êtes-vous sûr de vouloir supprimer cette critique pour "{{ object.film.titre }}" ?</p>
+            
+            <button type="submit" class="btn btn-danger">Supprimer</button>
+            <a href="{% url 'theater:film_detail' uid=object.film.uid %}" class="btn btn-secondary">Annuler</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "theater/Layout.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="contact-form text-center">
+           
+            
+            <form method="post" novalidate="novalidate" enctype="multipart/form-data">
+                {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                <!-- Premier rang: Nom et Prénom -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form.first_name.label_tag }}
+                            {{ form.first_name }}
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form.last_name.label_tag }}
+                            {{ form.last_name }}
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Deuxième rang: Username et Email -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form.username.label_tag }}
+                            {{ form.username }}
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form.email.label_tag }}
+                            {{ form.email }}
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Troisième rang: Mot de passe et Confirmation -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form.password.label_tag }}
+                            {{ form.password }}
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form.password_confirm.label_tag }}
+                            {{ form.password_confirm }}
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quatrième rang: Avatar (centré) -->
+                <div class="row mb-3">
+                    <div class="col-md-6 mx-auto">
+                        <div class="form-group">
+                            {{ form.avatar.label_tag }}
+                            {{ form.avatar }}
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boutons et lien de connexion -->
+                <div class="row">
+                    <div class="col-12">
+                        <input type="submit" value="Envoyer" class="btn btn-info">
+                        <input type="reset" value="Annuler" class="btn btn-danger">
+                        <p class="mt-4 text-sm text-center">
+                            Déjà un compte ? 
+                            <a href="{% url 'users:login' %}" class="text-primary text-gradient font-weight-bold">Se connecter</a>
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
