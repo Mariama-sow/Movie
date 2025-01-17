@@ -10,7 +10,6 @@ class EmailBackend(BaseBackend):
         if email is None or password is None:
             return None
         try:
-            # Essayer d'abord avec l'email
             user = User.objects.get(email=email)
             if user.check_password(password):
                 return user

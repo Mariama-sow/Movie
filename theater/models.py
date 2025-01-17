@@ -4,7 +4,7 @@ from django.db.models import Avg, Count
 
 class Acteur(models.Model):
     nom = models.CharField(max_length=100)
-    role = models.CharField(max_length=100, blank=True, null=True)  # Rôle dans le film
+    role = models.CharField(max_length=100, blank=True, null=True)  
     photo = models.ImageField(upload_to='acteurs/', blank=True, null=True)
 
     def __str__(self):
@@ -27,7 +27,7 @@ class Film(models.Model):
     synopsis = models.TextField(verbose_name='Synopsis')
     genre = models.CharField(max_length=50, choices=GENRE_CHOICES , verbose_name='Genre')
     date_sortie = models.DateField(verbose_name='Date de Sortie')
-    acteurs = models.ManyToManyField(Acteur, related_name='films')  # Relation avec Acteur
+    acteurs = models.ManyToManyField(Acteur, related_name='films')  
     duree = models.PositiveIntegerField(help_text="Durée du film en minutes.")
     affiche = models.ImageField(upload_to='films_affiches/')
 

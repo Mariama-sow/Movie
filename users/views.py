@@ -36,7 +36,7 @@ class CustomLoginView(LoginView):
         return kwargs
     
     def form_invalid(self, form):
-        logger.error("Le formulaire est invalide : %s", form.errors)  # Log les erreurs de validation
+        logger.error("Le formulaire est invalide : %s", form.errors)  
         return super().form_invalid(form)
 
     def get_success_url(self):
@@ -113,7 +113,7 @@ class PasswordResetRequestView(View):
             email = form.cleaned_data['email']
             user = CustomUser.objects.get(email=email)
             
-            # Génération du token
+            
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             
@@ -122,7 +122,7 @@ class PasswordResetRequestView(View):
                 reverse_lazy('users:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
             )
             
-            # Envoi de l'email
+            
             subject = "Réinitialisation de votre mot de passe"
             email_template = 'users/password_reset_email.html'
             context = {

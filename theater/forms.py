@@ -11,13 +11,13 @@ class FilmFilterForm(forms.Form):
     ]
     
     genre = forms.ChoiceField(
-        choices=[('', 'Tous les genres')],  # On le remplira dynamiquement
+        choices=[('', 'Tous les genres')],  
         required=False,
         widget=forms.Select(attrs={'class': 'form-select'})
     )
     
     annee = forms.ChoiceField(
-        choices=[('', 'Toutes les années')],  # On le remplira dynamiquement
+        choices=[('', 'Toutes les années')],  
         required=False,
         widget=forms.Select(attrs={'class': 'form-select'})
     )
@@ -35,7 +35,7 @@ class FilmFilterForm(forms.Form):
         genres = Film.objects.values_list('genre', flat=True).distinct()
         self.fields['genre'].choices += [(g, g) for g in genres]
         
-        # Récupérer toutes les années uniques
+        
         annees = Film.objects.dates('date_sortie', 'year')
         self.fields['annee'].choices += [(date.year, date.year) for date in annees]
 

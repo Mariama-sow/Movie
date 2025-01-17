@@ -30,7 +30,7 @@ class CustomUserLoginForm(forms.Form):
         if not user:
             raise forms.ValidationError("Connexion invalide.")
         
-        # Stocker l'utilisateur pour une utilisation ultérieure
+       
         self.user = user
         return cleaned_data
 
@@ -80,7 +80,7 @@ class CustomUserCreateForm(forms.ModelForm):
 
     def clean_password(self):
         password = self.cleaned_data.get('password')
-        validate_password(password)  # Applique les règles de validation de Django
+        validate_password(password)  
         return password
         
 
@@ -106,7 +106,7 @@ class CustomUserCreateForm(forms.ModelForm):
         return email
 
 
-# forms.py - Mise à jour des widgets
+
 class UserProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = CustomUser

@@ -30,9 +30,9 @@ class TMDBServices:
                     'language': 'fr-FR'
                 }
             )
-            response.raise_for_status()  # Lève une exception si le statut HTTP est une erreur
+            response.raise_for_status()  
             data = response.json()
-            logger.debug(f"Réponse TMDB : {data}")  # Ajout d'un log pour inspecter la réponse
+            logger.debug(f"Réponse TMDB : {data}")  
             return data
         except requests.exceptions.RequestException as e:
             logger.error(f"Erreur lors de la recherche TMDB : {e}")

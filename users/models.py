@@ -18,8 +18,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
     EMAIL_FIELD = 'email'
-    USERNAME_FIELD = 'email'  # Utiliser l'email comme identifiant principal
-    REQUIRED_FIELDS = ['first_name','last_name','username','password',]  # Champs requis supplémentaires pour le superuser
+    USERNAME_FIELD = 'email'  
+    REQUIRED_FIELDS = ['first_name','last_name','username','password',]  
 
 
    

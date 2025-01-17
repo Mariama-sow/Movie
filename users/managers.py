@@ -4,7 +4,7 @@ class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError("L'adresse email est obligatoire")
-        email = self.normalize_email(email)
+        email = self.normalize_email(email=email)
         extra_fields.setdefault('username', None)  # Définir username sur None
         user = self.model(email=email, **extra_fields)
         user.set_password(password)

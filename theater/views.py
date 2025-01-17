@@ -24,50 +24,6 @@ class FilmListView(ListView):
     paginate_by = 12  # Pagination optionnelle
 
     def get_queryset(self):
-        # query = self.request.GET.get('query', '')
-        # queryset = Film.objects.all()
-        
-        # # Recherche les films
-        # if query:
-        #     # Recherche locale
-        #     local_results = Film.objects.filter(
-        #         Q(titre__icontains=query) |
-        #         Q(synopsis__icontains=query)
-        #     )
-            
-        #     # Recherche TMDB
-        #     tmdb_results = TMDBServices.search_movie(query)
-        #       # Convertir les résultats TMDB en un format compatible
-        #     tmdb_films = [
-        #         Film(
-        #             titre=tmdb_result['title'],
-        #             synopsis=tmdb_result['overview'],
-        #             affiche=tmdb_result['poster_path'],
-        #             note_moyenne=tmdb_result['vote_average'],
-        #             duree=tmdb_result.get('runtime', 0),  # Si la durée est disponible
-        #             date_sortie=tmdb_result['release_date']
-        #         )
-        #         for tmdb_result in tmdb_results.get('results', [])
-        #     ]
-                
-        #     # Fusionner les résultats locaux et TMDB
-        #     queryset = chain(local_results, tmdb_films)
-        
-        # # Récupérer les paramètres de filtrage
-        # genre = self.request.GET.get('genre')
-        # annee = self.request.GET.get('annee')
-        # note_min = self.request.GET.get('note_min')
-
-        # # Appliquer les filtres
-        # if genre:
-        #     queryset = queryset.filter(genre=genre)
-        # if annee:
-        #     queryset = queryset.filter(date_sortie__year=annee)
-        # if note_min:
-        #     queryset = queryset.filter(note_moyenne__gte=float(note_min))
-
-        # return queryset
-
         query = self.request.GET.get('query', '')
         local_results = Film.objects.filter(Q(titre__icontains=query) | Q(synopsis__icontains=query)) if query else Film.objects.all()
         tmdb_results = TMDBServices.search_movie(query).get('results', []) if query else []
@@ -75,7 +31,7 @@ class FilmListView(ListView):
           # Transformer les résultats TMDB en objets compatibles
         tmdb_films = [
         {
-            'id': tmdb_result['id'],  # Ajout de l'ID TMDB
+            'id': tmdb_result['id'],  
             'titre': tmdb_result['title'],
             'synopsis': tmdb_result['overview'],
             'affiche': f"https://image.tmdb.org/t/p/w500{tmdb_result['poster_path']}" if tmdb_result['poster_path'] else None,
@@ -88,7 +44,7 @@ class FilmListView(ListView):
          # Fusionner les résultats locaux et TMDB
         combined_results = list(chain(local_results, tmdb_films))
 
-        # Ajouter la pagination
+        
         paginator = Paginator(combined_results, self.paginate_by)
         page_number = self.request.GET.get('page')
         return paginator.get_page(page_number)
@@ -140,7 +96,7 @@ class FilmDetailView(DetailView):
     
 
 def film_detail_tmdb(request, tmdb_id):
-    # Récupérer les détails du film depuis TMDB
+    # Récupére les détails du film depuis TMDB
     film_details = TMDBServices.get_movie_details(tmdb_id)
     
     if film_details:
@@ -153,7 +109,7 @@ def film_detail_tmdb(request, tmdb_id):
             'duree': film_details.get('runtime', 0),
             'date_sortie': film_details['release_date'],
             'genres': [genre['name'] for genre in film_details.get('genres', [])],
-            # Ajoutez d'autres champs selon vos besoins
+            
         }
         return render(request, 'theater/film_detail_tmdb.html', {'film': film})
     else:
