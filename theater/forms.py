@@ -11,15 +11,17 @@ class FilmFilterForm(forms.Form):
     ]
     
     genre = forms.ChoiceField(
-        choices=[('', 'Tous les genres')],  
+        choices=[],  # Initialisé vide
         required=False,
-        widget=forms.Select(attrs={'class': 'form-select'})
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label='Genre'
     )
     
     annee = forms.ChoiceField(
-        choices=[('', 'Toutes les années')],  
+        choices=[('', 'Toutes les années')],
         required=False,
-        widget=forms.Select(attrs={'class': 'form-select'})
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label='Année'
     )
     
     note_min = forms.ChoiceField(
@@ -31,12 +33,20 @@ class FilmFilterForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Récupérer tous les genres uniques
+        
+        # Récupération des genres disponibles
         genres = Film.objects.values_list('genre', flat=True).distinct()
-        self.fields['genre'].choices += [(g, g) for g in genres]
+        genre_choices = [('', 'Tous les genres')]
         
+        # Conversion des valeurs du modèle en choix lisibles
+        for genre in genres:
+            readable_genre = dict(Film.GENRE_CHOICES).get(genre, genre)
+            genre_choices.append((genre, readable_genre))
         
-        annees = Film.objects.dates('date_sortie', 'year')
+        self.fields['genre'].choices = genre_choices
+        
+        # Récupération des années disponibles
+        annees = Film.objects.dates('date_sortie', 'year', order='DESC')
         self.fields['annee'].choices += [(date.year, date.year) for date in annees]
 
 

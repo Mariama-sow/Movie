@@ -13,11 +13,15 @@ class CritiqueCreateView(LoginRequiredMixin, CreateView):
     form_class = CritiqueForm
     template_name = 'review/critique_form.html'
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['film'] = get_object_or_404(Film, uid=self.kwargs['film_uid'])
+        return context
+    
     def form_valid(self, form):
         form.instance.utilisateur = self.request.user
         form.instance.film = get_object_or_404(Film, uid=self.kwargs['film_uid'])
         try:
-
             return super().form_valid(form)    
         except IntegrityError:
             messages.error(
@@ -38,6 +42,11 @@ class CritiqueUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_queryset(self):
         return Critique.objects.filter(utilisateur=self.request.user)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['film'] = self.object.film
+        return context
     
     def get_success_url(self):
         return reverse_lazy('theater:film_detail', kwargs={'uid': self.object.film.uid})

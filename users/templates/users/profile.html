@@ -1,134 +1,182 @@
-{% extends "theater/Layout.html" %}
+{% extends 'theater/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Profil - CineCritic{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row">
-        <!-- Section Profile Header -->
-        <div class="col-12 mb-4">
-            <div class="card bg-gradient-primary text-white" style="background: linear-gradient(45deg, #4b6cb7 0%, #182848 100%);">
-                <div class="card-body py-5">
-                    <div class="row align-items-center">
-                        <div class="col-auto">
-                            <div class="avatar-upload">
-                                {% if user.avatar %}
-                                    <img src="{{ user.avatar.url }}" alt="Profile" class="rounded-circle border border-4 border-white shadow" style="width: 120px; height: 120px; object-fit: cover;">
-                                {% else %}
-                                    <div class="default-avatar rounded-circle border border-4 border-white shadow d-flex align-items-center justify-content-center bg-light text-primary" style="width: 120px; height: 120px; font-size: 2.5rem;">
-                                        {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
-                                    </div>
-                                {% endif %}
-                            </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card glass-effect">
+                <div class="card-body text-center">
+                    {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" class="rounded-circle mb-3" width="150" height="150" alt="Avatar">
+                    {% else %}
+                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 150px; height: 150px;">
+                        <i class="fas fa-user text-white" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <h3 class="text-white mb-1">{{ user.get_full_name }}</h3>
+                    <p class="text-muted mb-3">@{{ user.username }}</p>
+                    
+                    <div class="d-flex justify-content-center gap-3 mb-4">
+                        <div class="text-center">
+                            <div class="text-warning fw-bold">{{ user.critique_set.count }}</div>
+                            <small class="text-muted">Critiques</small>
                         </div>
-                        <div class="col">
-                            <h2 class="mb-1">{{ user.get_full_name }}</h2>
-                            <p class="mb-0">{{ user.email }}</p>
+                        <div class="text-center">
+                            <div class="text-warning fw-bold">{{ user.commentaire_set.count }}</div>
+                            <small class="text-muted">Commentaires</small>
                         </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <a href="{% url 'users:logout' %}" class="btn btn-outline-danger">
+                            <i class="fas fa-sign-out-alt me-1"></i>Déconnexion
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Section Formulaire -->
-        <div class="col-md-8 mx-auto">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h3 class="card-title mb-4">Modifier mon profil</h3>
-
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-
+        
+        <div class="col-lg-8">
+            <div class="card glass-effect">
+                <div class="card-header border-0 bg-transparent">
+                    <h3 class="text-white mb-0">
+                        <i class="fas fa-user-cog me-2"></i>
+                        Paramètres du compte
+                    </h3>
+                </div>
+                <div class="card-body">
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         
-                        <!-- Photo de profil -->
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                {{ form.first_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                {{ form.last_name|as_crispy_field }}
+                            </div>
+                        </div>
+                        
                         <div class="mb-4">
-                            <label class="form-label fw-bold">Photo de profil</label>
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="avatar-preview rounded-circle border" style="width: 64px; height: 64px; overflow: hidden;">
+                            {{ form.username|as_crispy_field }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            {{ form.email|as_crispy_field }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label text-white">Photo de profil</label>
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
                                     {% if user.avatar %}
-                                        <img src="{{ user.avatar.url }}" alt="Current avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <img id="avatarPreview" src="{{ user.avatar.url }}" class="rounded-circle" width="80" height="80" alt="Avatar">
+                                    {% else %}
+                                    <div id="avatarPreview" class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                        <i class="fas fa-user text-white"></i>
+                                    </div>
                                     {% endif %}
                                 </div>
                                 <div class="flex-grow-1">
-                                    {{ form.avatar }}
+                                    {{ form.avatar|as_crispy_field }}
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Informations personnelles -->
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    {{ form.first_name }}
-                                    <label>{{ form.first_name.label }}</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    {{ form.last_name }}
-                                    <label>{{ form.last_name.label }}</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    {{ form.username }}
-                                    <label>{{ form.username.label }}</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    {{ form.email }}
-                                    <label>{{ form.email.label }}</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <button type="submit" class="btn btn-primary px-4">
-                                <i class="fas fa-save me-2"></i>Enregistrer les modifications
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-save me-1"></i>Enregistrer les modifications
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+            
+            <!-- Section des critiques de l'utilisateur -->
+            <div class="card glass-effect mt-4">
+                <div class="card-header border-0 bg-transparent">
+                    <h3 class="text-white mb-0">
+                        <i class="fas fa-pen me-2"></i>
+                        Mes critiques
+                    </h3>
+                </div>
+                <div class="card-body">
+                    {% if user.critique_set.exists %}
+                    <div class="list-group list-group-flush">
+                        {% for critique in user.critique_set.all %}
+                        <div class="list-group-item bg-transparent border-secondary">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5 class="text-white mb-1">{{ critique.film.titre }}</h5>
+                                    <div class="stars mb-2">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= critique.note %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <p class="text-muted mb-0">{{ critique.titre }}</p>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted">{{ critique.date_publication|date:"d/m/Y" }}</small>
+                                    <div class="mt-2">
+                                        <a href="{% url 'review:edit_critique' uid=critique.uid %}" class="btn btn-sm btn-outline-warning me-1">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'review:delete_critique' uid=critique.uid %}" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-pen text-muted mb-3" style="font-size: 3rem;"></i>
+                        <p class="text-muted">Vous n'avez pas encore publié de critique</p>
+                        <a href="{% url 'theater:film' %}" class="btn btn-warning">
+                            <i class="fas fa-film me-1"></i>Explorer les films
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-.form-floating > .form-control {
-    height: calc(3.5rem + 2px);
-    padding: 1rem 0.75rem;
-}
-
-.form-floating > label {
-    padding: 1rem 0.75rem;
-}
-
-.avatar-upload {
-    position: relative;
-}
-
-.avatar-upload:hover::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 120px;
-    height: 120px;
-    background: rgba(0,0,0,0.3);
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-.default-avatar {
-    font-weight: bold;
-}
-</style>
+{% block extra_js %}
+<script>
+    // Prévisualisation de l'avatar
+    document.getElementById('id_avatar').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('avatarPreview');
+                if (preview.tagName === 'IMG') {
+                    preview.src = e.target.result;
+                } else {
+                    preview.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'rounded-circle';
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    preview.appendChild(img);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}
 {% endblock %}

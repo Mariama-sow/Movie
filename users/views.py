@@ -1,5 +1,6 @@
 from django.shortcuts import render , redirect
 from django.contrib.auth.views import LoginView , LogoutView
+from django.contrib.auth import logout
 from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
@@ -73,16 +74,16 @@ class CustomCreateUserView(CreateView):
             logger.error("Erreur lors de l'envoi de l'email de bienvenue : %s", e)
 
     
-class CustomLogoutView(LogoutView):
-    next_page = reverse_lazy('users:login')
+class LogoutView(View):
+    login_url = reverse_lazy('users:login') 
 
-    def dispatch(self, request, *args, **kwargs):
-        messages.success(request, "Votre compte a été déconnecté.")
-        return super().dispatch(request, *args, **kwargs)
-        
-    def get(self, request, *args, **kwargs):
-        # Permettre la déconnexion avec GET
-        return self.post(request, *args, **kwargs)
+    def get(self,request) :
+        logout(request) 
+        messages.success(
+            self.request,
+            "Votre a ete deconnecte"
+        )
+        return redirect(self.login_url)   
     
 
 class UserProfileView(LoginRequiredMixin, UpdateView):

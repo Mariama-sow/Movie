@@ -1,18 +1,34 @@
-{% extends "theater/Layout.html" %}
+{% extends 'theater/base.html' %}
+
+{% block title %}Supprimer la critique - CineCritic{% endblock %}
 
 {% block content %}
-<div class="container p-4">
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h2>Supprimer la critique</h2>
-            
-            <form method="post">
-            {% csrf_token %}
-            <p>Êtes-vous sûr de vouloir supprimer cette critique pour "{{ object.film.titre }}" ?</p>
-            
-            <button type="submit" class="btn btn-danger">Supprimer</button>
-            <a href="{% url 'theater:film_detail' uid=object.film.uid %}" class="btn btn-secondary">Annuler</a>
-            </form>
+        <div class="col-lg-6">
+            <div class="card glass-effect border-danger">
+                <div class="card-header bg-transparent border-danger">
+                    <h2 class="text-white mb-0">
+                        <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                        Confirmer la suppression
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Êtes-vous sûr de vouloir supprimer votre critique pour le film <strong>"{{ object.film.titre }}"</strong> ? Cette action est irréversible.</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% url 'theater:film_detail' uid=object.film.uid %}" class="btn btn-outline-light me-md-2">
+                                <i class="fas fa-times me-1"></i>Annuler
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>Supprimer définitivement
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

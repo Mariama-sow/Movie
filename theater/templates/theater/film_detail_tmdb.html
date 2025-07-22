@@ -1,123 +1,83 @@
-{% extends "theater/Layout.html" %}
+{% extends 'theater/base.html' %}
+
+{% block title %}{{ film.titre }} - CineCritic{% endblock %}
+
 {% block content %}
-<!-- Film Details -->
-<div class="container-xxl py-5">
-    <div class="container">
-        <!-- Film Info -->
-        <div class="row g-5">
-            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s" style="min-height: 400px;">
-                <div class="position-relative h-100">
+<div class="container">
+    <div class="row mb-5">
+        <!-- Colonne de gauche - Informations du film -->
+        <div class="col-lg-4 mb-4">
+            <div class="card glass-effect sticky-top" style="top: 100px;">
+                <div class="card-body">
                     {% if film.affiche %}
-                    <img src="{{ film.affiche }}" alt="{{ film.titre }}" class="img-fluid rounded" style="height: 500px ; width: 500px ;">
+                    <img src="{{ film.affiche }}" class="img-fluid rounded-3 mb-4" alt="{{ film.titre }}">
                     {% else %}
-                        <div class="bg-light p-4 rounded text-center">
-                            <i class="fa fa-3x fa-film text-primary"></i>
-                        </div>
+                    <div class="bg-dark rounded-3 d-flex align-items-center justify-content-center mb-4" style="height: 400px;">
+                        <i class="fas fa-film text-muted" style="font-size: 3rem;"></i>
+                    </div>
                     {% endif %}
+                    
+                    <div class="text-center mb-4">
+                        <div class="display-4 fw-bold text-warning mb-2">
+                            {{ film.note_moyenne|floatformat:1 }}
+                        </div>
+                        <div class="stars mb-3">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= film.note_moyenne %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4 border-secondary">
+                    
+                    <h5 class="text-white mb-3">Détails</h5>
+                    <ul class="list-unstyled text-muted">
+                        <li class="mb-2">
+                            <i class="fas fa-calendar me-2"></i>
+                            Sortie: {{ film.date_sortie }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-clock me-2"></i>
+                            Durée: {{ film.duree }} minutes
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-tag me-2"></i>
+                            Genre: 
+                            {% for genre in film.genres %}
+                            <span class="genre-badge">{{ genre }}</span>
+                            {% endfor %}
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
-                <!-- En-tête du film -->
-                <h6 class="section-title bg-white text-start text-primary pe-3">Détails du Film</h6>
-                <h1 class="mb-4">{{ film.titre }}</h1>
+        </div>
+        
+        <!-- Colonne de droite - Contenu principal -->
+        <div class="col-lg-8">
+            <h1 class="text-white mb-4">{{ film.titre }}</h1>
             
-                <!-- Informations techniques -->
-                <div class="film-info bg-light p-4 rounded mb-4">
-                    <div class="row gy-2 gx-4">
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <i class="fa fa-clock text-primary me-2"></i>
-                                <span>{{ film.duree }} minutes</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <i class="fa fa-film text-primary me-2"></i>
-                                <span>{{ film.genre }}</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <i class="fa fa-calendar text-primary me-2"></i>
-                                <span>{{ film.date_sortie }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            
-                 <!-- Synopsis Section avec style amélioré -->
-                <div class="synopsis-section">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fa fa-book text-primary me-2 fa-lg"></i>
-                        <h5 class="mb-0">Synopsis</h5>
-                    </div>
-                    <div class="synopsis-content p-4 bg-light rounded" style="max-height: 300px; overflow-y: auto;">
-                        <p class="mb-0" style="white-space: pre-line; line-height: 1.6; text-align: justify;">
+            <div class="card glass-effect mb-4">
+                <div class="card-body">
+                    <h5 class="text-white mb-3">Synopsis</h5>
+                    <p class="text-muted">
+                        {% if film.synopsis %}
                             {{ film.synopsis }}
-                        </p>
-                    </div>
+                        {% else %}
+                            Aucun synopsis disponible pour ce film.
+                        {% endif %}
+                    </p>
                 </div>
             </div>
-        </div>
-
-        <!-- Cast Section -->
-        {% if film.acteurs.exists %}
-        <div class="cast-section mt-5">
-            <h2 class="text-center mb-4">Casting</h2>
-            <div class="row g-4">
-                {% for acteur in film.acteurs.all %}
-                <div class="col-lg-3 col-md-6 wow fadeInUp">
-                    <div class="team-item bg-light rounded">
-                        <div class="overflow-hidden">
-                            {% if acteur.photo %}
-                                <img class="img-fluid" src="{{ acteur.photo.url }}" alt="{{ acteur.nom }}" class="img-fluid mb-4 rounded" style="height: 200px; object-fit: cover;" >
-                            {% else %}
-                                <div class="bg-light p-4 text-center">
-                                    <i class="fa fa-user fa-3x text-primary"></i>
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="text-center p-4">
-                            <h5 class="mb-0">{{ acteur.nom }}</h5>
-                            <small>{{ acteur.role }}</small>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-
-
-        <!-- Reviews Section -->
-        <div class="container-xxl py-5">
-            <div class="container">
-                <div class="text-center">
-                    <h6 class="section-title bg-white text-center text-primary px-3">Critiques</h6>
-                    <h1 class="mb-5">Avis des spectateurs</h1>
-                </div>
-
-                <!-- Global Rating Stats -->
-                <div class="row justify-content-center mb-5">
-                    <div class="col-lg-4 text-center">
-                        <div class="rating-summary p-4 bg-light rounded-3">
-                            <h2 class="display-4 text-primary mb-0">{{ film.note_moyenne|floatformat:1 }}</h2>
-                            <div class="stars my-2">
-                                {% for i in "12345"|make_list %}
-                                    <i class="fa fa-star {% if forloop.counter <= film.note_moyenne %}text-warning{% endif %} fa-2x"></i>
-                                {% endfor %}
-                            </div>
-                            <p class="text-muted mb-0">{{ film.nombre_critiques }} avis</p>
-                        </div>
-                    </div>
-                </div>
-
-               
-
-               
+            
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Ce film est récupéré depuis The Movie Database. Pour ajouter une critique, vous devez d'abord l'ajouter à notre base de données locale.
             </div>
         </div>
     </div>
 </div>
-
 {% endblock %}

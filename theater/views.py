@@ -3,52 +3,103 @@ from django.urls import reverse
 from django.core.paginator import Paginator
 from itertools import chain
 from django.views.generic import ListView , DetailView
-from django.db.models import Q
+from django.db.models import Q , Avg ,Count
 from django.contrib import messages
 from review.models import Critique
 from review.forms import CommentaireForm
 from services.tmdb import TMDBServices
+from users.models import CustomUser
 from .models import Film
 from .forms import FilmFilterForm , SearchForm
-
-
+  
 
 def home(request):
-    return render(request,'theater/home.html')
+    # Films avec au moins une critique, triés par popularité
+    popular_films = Film.objects.annotate(
+        avg_rating=Avg('critique__note'),
+        review_count=Count('critique')
+    ).filter(review_count__gte=1).order_by('-avg_rating')[:4]
+    
+    # Si aucun film avec critique, prendre les 4 derniers films
+    if not popular_films.exists():
+        popular_films = Film.objects.order_by('-date_sortie')[:4]
+
+    # Dernières critiques
+    recent_critiques = Critique.objects.select_related(
+        'film', 'utilisateur'
+    ).order_by('-date_publication')[:3]
+
+    context = {
+        'films': popular_films,
+        'recent_critiques': recent_critiques,
+        'total_films': Film.objects.count(),
+        'total_critiques': Critique.objects.count(),
+        'total_users': CustomUser.objects.count(),
+    }
+    return render(request, 'theater/home.html', context)
 
 
 class FilmListView(ListView):
     model = Film
     template_name = 'theater/film.html'
     context_object_name = 'films'
-    paginate_by = 12  # Pagination optionnelle
+    paginate_by = 12
 
     def get_queryset(self):
         query = self.request.GET.get('query', '')
-        local_results = Film.objects.filter(Q(titre__icontains=query) | Q(synopsis__icontains=query)) if query else Film.objects.all()
-        tmdb_results = TMDBServices.search_movie(query).get('results', []) if query else []
-
-          # Transformer les résultats TMDB en objets compatibles
-        tmdb_films = [
-        {
-            'id': tmdb_result['id'],  
-            'titre': tmdb_result['title'],
-            'synopsis': tmdb_result['overview'],
-            'affiche': f"https://image.tmdb.org/t/p/w500{tmdb_result['poster_path']}" if tmdb_result['poster_path'] else None,
-            'note_moyenne': tmdb_result['vote_average'],
-            'duree': tmdb_result.get('runtime', 0),
-            'date_sortie': tmdb_result['release_date']
+        filters = {
+            'genre': self.request.GET.get('genre'),
+            'annee': self.request.GET.get('annee'),
+            'note_min': self.request.GET.get('note_min')
         }
-        for tmdb_result in tmdb_results
-        ]
-         # Fusionner les résultats locaux et TMDB
-        combined_results = list(chain(local_results, tmdb_films))
 
+        # Filtrage des films locaux
+        local_films = Film.objects.all()
         
+        if query:
+            local_films = local_films.filter(Q(titre__icontains=query) | Q(synopsis__icontains=query))
+        
+        if filters['genre']:
+            local_films = local_films.filter(genre=filters['genre'])
+        
+        if filters['annee']:
+            local_films = local_films.filter(date_sortie__year=filters['annee'])
+        
+        if filters['note_min']:
+            local_films = local_films.annotate(avg_rating=Avg('critique__note'))\
+                                   .filter(avg_rating__gte=filters['note_min'])
+
+        # Recherche TMDB (uniquement si query existe mais pas de filtres actifs)
+        tmdb_results = []
+        if query and not any(filters.values()):
+            tmdb_results = TMDBServices.search_movie(query).get('results', [])
+            tmdb_films = [{
+                'id': r['id'],
+                'titre': r['title'],
+                'synopsis': r['overview'],
+                'affiche': f"https://image.tmdb.org/t/p/w500{r['poster_path']}" if r['poster_path'] else None,
+                'note_moyenne': r['vote_average'],
+                'duree': r.get('runtime', 0),
+                'date_sortie': r['release_date'],
+                'is_tmdb': True  # Marqueur pour les films TMDB
+            } for r in tmdb_results]
+
+            # Fusion des résultats
+            combined_results = list(chain(local_films, tmdb_films))
+        else:
+            combined_results = list(local_films)
+
         paginator = Paginator(combined_results, self.paginate_by)
         page_number = self.request.GET.get('page')
         return paginator.get_page(page_number)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = FilmFilterForm(self.request.GET or None)
+        context['search_form'] = SearchForm(
+            initial={'query': self.request.GET.get('query', '')}
+        )
+        return context
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['films'] = self.get_queryset()

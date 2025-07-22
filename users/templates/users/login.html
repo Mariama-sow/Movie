@@ -1,129 +1,69 @@
-{% extends "theater/Layout.html" %}
+{% extends 'theater/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Connexion - CineCritic{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh; background-color: #f8f9fa;">
-    <div class="col-md-5">
-        <div class="card shadow-lg border-0 rounded-lg">
-            <div class="card-body p-5">
-                <!-- En-tête du formulaire -->
-                <div class="text-center mb-4">
-                    <h2 class="font-weight-bold mb-3">Connexion</h2>
-                    <p class="text-muted">Connectez-vous à votre compte</p>
-                </div>
-
-                <!-- Messages d'alerte -->
-                {% if messages %}
-                <div class="messages mb-4">
-                    {% for message in messages %}
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card glass-effect border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <h1 class="text-gradient mb-3">CineCritic</h1>
+                        <p class="text-muted">Connectez-vous pour accéder à votre compte</p>
                     </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <!-- Formulaire -->
-                <form method="POST" action="{% url 'users:login' %}">
-                    {% csrf_token %}
                     
-                    <!-- Email -->
-                    <div class="form-group mb-4">
-                        <label for="{{ form.email.id_for_label }}" class="form-label fw-bold mb-2">Email</label>
-                        <div class="input-group">
-                            {{ form.email }}
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            {{ form.email|as_crispy_field }}
                         </div>
-                    </div>
-
-                    <!-- Mot de passe -->
-                    <div class="form-group mb-4">
-                        <label for="{{ form.password.id_for_label }}" class="form-label fw-bold mb-2">Mot de passe</label>
-                        <div class="input-group">
-                            {{ form.password }}
+                        
+                        <div class="mb-4">
+                            {{ form.password|as_crispy_field }}
                         </div>
-                    </div>
-
-                    <!-- Options supplémentaires -->
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                            <label class="form-check-label text-muted" for="remember">
-                                Se souvenir de moi
-                            </label>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberMe" name="remember">
+                                <label class="form-check-label text-muted" for="rememberMe">Se souvenir de moi</label>
+                            </div>
+                            <a href="{% url 'users:password_reset_request' %}" class="text-warning">Mot de passe oublié ?</a>
                         </div>
-                        <a href="{% url 'users:password_reset_request' %} " class="text-primary text-decoration-none">Mot de passe oublié ?</a>
-                    </div>
-
-                    <!-- Bouton de connexion -->
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-info btn-lg rounded-3">
-                            Connexion
+                        
+                        <button type="submit" class="btn btn-warning w-100 py-3 mb-4">
+                            <i class="fas fa-sign-in-alt me-2"></i>Se connecter
                         </button>
-                    </div>
-
-                    <!-- Lien d'inscription -->
-                    <p class="text-center mt-4 mb-0">
-                        Vous n'avez pas de compte ? 
-                        <a href="{% url 'users:create' %}" class="text-info fw-bold text-decoration-none">
-                            Créer un compte
-                        </a>
-                    </p>
-                </form>
+                        
+                        <div class="text-center">
+                            <p class="text-muted mb-0">Vous n'avez pas de compte ?</p>
+                            <a href="{% url 'users:create' %}" class="text-warning">S'inscrire maintenant</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
-<style>
-    .card {
-        background: white;
-        transition: all 0.3s ease;
-    }
-    
-    .card:hover {
-        transform: translateY(-5px);
-    }
-    
-    /* Style pour les champs de formulaire */
-    input[type="email"],
-    input[type="password"] {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        line-height: 1.5;
-        color: #212529;
-        background-color: #fff;
-        border: 1.5px solid #e5e5e5;
-        border-radius: 0.5rem;
-        transition: border-color 0.3s ease;
-    }
-    
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
-        outline: none;
-    }
-    
-    .btn-primary {
-        background: linear-gradient(45deg, #0d6efd, #0b5ed7);
-        border: none;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-primary:hover {
-        background: linear-gradient(45deg, #0b5ed7, #0a58ca);
-        transform: translateY(-1px);
-    }
-    
-    .alert {
-        border-radius: 10px;
-        border: none;
-    }
-    
-    .alert-success {
-        background-color: #d1e7dd;
-        color: #0f5132;
-    }
-</style>
+{% block extra_js %}
+<script>
+    // Exemple de validation côté client
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('.needs-validation');
+        
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
+                form.classList.add('was-validated');
+            }, false);
+        });
+    });
+</script>
 {% endblock %}
