@@ -9,6 +9,6 @@ urlpatterns = [
     path('film/tmdb/<int:tmdb_id>/', film_detail_tmdb, name='film_detail_tmdb'),
     path('film/<uuid:uid>', FilmDetailView.as_view(), name= 'film_detail'),
     path('film/',FilmListView.as_view(),name= 'film'),
-    path('home/',home,name= 'home'),
+    path('',home,name= 'home'),
     
 ]

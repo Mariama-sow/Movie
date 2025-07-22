@@ -24,7 +24,7 @@ from django.conf import settings
 urlpatterns = [
     path('api/', include('api.urls')),
     path('users/', include('users.urls')),
-    path('film/', include('theater.urls')),
+    path('', include('theater.urls')),
     path('review/', include('review.urls')),
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
