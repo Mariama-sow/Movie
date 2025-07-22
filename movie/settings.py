@@ -32,7 +32,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 #SECRET_KEY = 'django-insecure-fty1xr6e0ot8ysc4q3)&s&51^im5l@&crmp3c19yt6f70hxm7@'
 SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG')
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -42,7 +42,7 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = '1000TechReservation@gmail.com'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cinecritic.pythonanywhere.com','localhost']
 
 
 # Application definition
