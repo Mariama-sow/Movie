@@ -24,9 +24,9 @@
                         <div class="stars mb-3">
                             {% for i in "12345" %}
                                 {% if forloop.counter <= film.note_moyenne %}
-                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star text-warning"></i>
                                 {% else %}
-                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star text-secondary"></i>
                                 {% endif %}
                             {% endfor %}
                         </div>
@@ -35,17 +35,17 @@
                     <hr class="my-4 border-secondary">
                     
                     <h5 class="text-white mb-3">Détails</h5>
-                    <ul class="list-unstyled text-muted">
+                    <ul class="list-unstyled text-white">
                         <li class="mb-2">
-                            <i class="fas fa-calendar me-2"></i>
+                            <i class="fas fa-calendar me-2 text-warning"></i>
                             Sortie: {{ film.date_sortie }}
                         </li>
                         <li class="mb-2">
-                            <i class="fas fa-clock me-2"></i>
+                            <i class="fas fa-clock me-2 text-warning"></i>
                             Durée: {{ film.duree }} minutes
                         </li>
                         <li class="mb-2">
-                            <i class="fas fa-tag me-2"></i>
+                            <i class="fas fa-tag me-2 text-warning"></i>
                             Genre: 
                             {% for genre in film.genres %}
                             <span class="genre-badge">{{ genre }}</span>
@@ -60,24 +60,72 @@
         <div class="col-lg-8">
             <h1 class="text-white mb-4">{{ film.titre }}</h1>
             
+            <!-- Section Synopsis -->
             <div class="card glass-effect mb-4">
                 <div class="card-body">
-                    <h5 class="text-white mb-3">Synopsis</h5>
-                    <p class="text-white">
+                    <h5 class="text-white mb-3">
+                        <i class="fas fa-align-left me-2 text-warning"></i>Synopsis
+                    </h5>
+                    <div class="synopsis-content text-white-80">
                         {% if film.synopsis %}
-                            {{ film.synopsis }}
+                            {{ film.synopsis|linebreaks }}
                         {% else %}
-                            Aucun synopsis disponible pour ce film.
+                            <p class="text-muted">Aucun synopsis disponible pour ce film.</p>
                         {% endif %}
-                    </p>
+                    </div>
                 </div>
             </div>
             
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                Ce film est récupéré depuis The Movie Database. Pour ajouter une critique, vous devez d'abord l'ajouter à notre base de données locale.
+            <!-- Section Acteurs -->
+            {% if film.casting %}
+            <div class="card glass-effect mb-4">
+                <div class="card-body">
+                    <h5 class="text-white mb-3">
+                        <i class="fas fa-users me-2 text-warning"></i>Casting
+                    </h5>
+                    <div class="row">
+                        {% for actor in film.casting|slice:":6" %}
+                        <div class="col-4 col-md-2 mb-3 text-center">
+                            <div class="actor-card">
+                                {% if actor.profile_path %}
+                                <img src="https://image.tmdb.org/t/p/w185{{ actor.profile_path }}" class="rounded-circle mb-2" width="80" height="80" alt="{{ actor.name }}">
+                                {% else %}
+                                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center mb-2 mx-auto" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-user text-dark"></i>
+                                </div>
+                                {% endif %}
+                                <p class="text-white small mb-0">{{ actor.name }}</p>
+                                <p class="text-muted small">{{ actor.character }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Alert -->
+            <div class="alert glass-effect border-warning">
+                <i class="fas fa-info-circle me-2 text-warning"></i>
+                <span class="text-white">Ce film est récupéré depuis The Movie Database. Pour ajouter une critique, vous devez d'abord l'ajouter à notre base de données locale.</span>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .synopsis-content {
+        line-height: 1.8;
+        font-size: 1.05rem;
+    }
+    
+    .text-white-80 {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .actor-card img {
+        object-fit: cover;
+        border: 2px solid rgba(255, 193, 7, 0.3);
+    }
+</style>
 {% endblock %}
