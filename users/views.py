@@ -47,7 +47,7 @@ class CustomLoginView(LoginView):
 class CustomCreateUserView(CreateView):
     model = CustomUser
     form_class = CustomUserCreateForm
-    template_name = 'users/Create.html'
+    template_name = 'users/create.html'
     success_url = reverse_lazy('users:login')
     
     def form_valid(self, form):

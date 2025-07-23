@@ -61,20 +61,20 @@
             <h1 class="text-white mb-4">{{ film.titre }}</h1>
             
             <!-- Section Synopsis -->
-            <div class="card glass-effect mb-4">
-                <div class="card-body">
-                    <h5 class="text-white mb-3">
-                        <i class="fas fa-align-left me-2 text-warning"></i>Synopsis
-                    </h5>
-                    <div class="synopsis-content text-white-80">
-                        {% if film.synopsis %}
-                            {{ film.synopsis|linebreaks }}
-                        {% else %}
-                            <p class="text-muted">Aucun synopsis disponible pour ce film.</p>
-                        {% endif %}
+                <div class="card glass-effect mb-4">
+                    <div class="card-body">
+                        <h5 class="text-white mb-3">
+                            <i class="fas fa-align-left me-2 text-warning"></i>Synopsis
+                        </h5>
+                        <div class="synopsis-text" style="color: white !important;">
+                            {% if film.synopsis %}
+                                {{ film.synopsis|linebreaks }}
+                            {% else %}
+                                <p class="text-muted">Aucun synopsis disponible pour ce film.</p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-            </div>
             
             <!-- Section Acteurs -->
             {% if film.casting %}
@@ -114,18 +114,15 @@
 </div>
 
 <style>
-    .synopsis-content {
-        line-height: 1.8;
+    .synopsis-text {
+        color: white !important;
         font-size: 1.05rem;
+        line-height: 1.8;
     }
     
-    .text-white-80 {
-        color: rgba(255, 255, 255, 0.8);
-    }
-    
-    .actor-card img {
-        object-fit: cover;
-        border: 2px solid rgba(255, 193, 7, 0.3);
+    .synopsis-text p {
+        color: inherit !important;
+        margin-bottom: 1rem;
     }
 </style>
 {% endblock %}

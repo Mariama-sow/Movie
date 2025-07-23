@@ -42,7 +42,7 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = '1000TechReservation@gmail.com'
 
-ALLOWED_HOSTS = ['cinecritic.pythonanywhere.com','localhost']
+ALLOWED_HOSTS = ['cinecritic.pythonanywhere.com','localhost','127.0.0.1']
 
 
 # Application definition
